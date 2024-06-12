@@ -5,7 +5,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: lamp_web_1
+    container_name: lamp_web
+    restart: always
     ports:
       - "80:80"
     volumes:
@@ -14,21 +15,24 @@ services:
       - lamp-network
 
   db:
-    image: mysql:5.7
+    image: mysql:8.0
     container_name: lamp_db
+    restart: always
     environment:
       MYSQL_ROOT_PASSWORD: rootpassword
-      MYSQL_DATABASE: my_database
+      MYSQL_DATABASE: videgrenierenligne
       MYSQL_USER: user
       MYSQL_PASSWORD: userpassword
     volumes:
       - db_data:/var/lib/mysql
+      - ./sql:/docker-entrypoint-initdb.d
     networks:
       - lamp-network
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: lamp_phpmyadmin
+    restart: always
     environment:
       PMA_HOST: db
       MYSQL_ROOT_PASSWORD: rootpassword
