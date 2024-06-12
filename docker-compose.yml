@@ -1,5 +1,5 @@
-version: "3.7"
-
+version: '3.7'
+ 
 services:
   web:
     build:
@@ -12,7 +12,7 @@ services:
       - web:/var/www/html
     networks:
       - lamp-network
-
+ 
   db:
     image: mysql:5.7
     container_name: lamp_db
@@ -25,7 +25,7 @@ services:
       - db_data:/var/lib/mysql
     networks:
       - lamp-network
-
+ 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: lamp_phpmyadmin
@@ -36,10 +36,10 @@ services:
       - "8080:80"
     networks:
       - lamp-network
-
+ 
 networks:
   lamp-network:
-
-volumes: 
+ 
+volumes:
   db_data:
   web:
