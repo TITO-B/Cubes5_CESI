@@ -6,27 +6,26 @@ use App\Config;
 use App\Model\UserRegister;
 use App\Models\Articles;
 use App\Utility\Hash;
+use App\Utility\Flash;
 use App\Utility\Session;
 use \Core\View;
 use Exception;
 use http\Env\Request;
 use http\Exception\InvalidArgumentException;
 
-/**
- * User controller
- */
+/* User controller */
+
 class User extends \Core\Controller
 {
 
-    /**
-     * Affiche la page de login
-     */
+    /* Affiche la page de login */
     public function loginAction()
     {
-        if(isset($_POST['submit'])){
+        if (isset($_POST['submit'])) {
             $f = $_POST;
 
             // TODO: Validation
+
 
             $this->login($f);
 
@@ -37,30 +36,49 @@ class User extends \Core\Controller
         View::renderTemplate('User/login.html');
     }
 
-    /**
-     * Page de création de compte
-     */
+    /* Page de création de compte */
     public function registerAction()
     {
-        if(isset($_POST['submit'])){
+        if (isset($_POST['submit'])) {
             $f = $_POST;
 
-            if($f['password'] !== $f['password-check']){
-                // TODO: Gestion d'erreur côté utilisateur
+            if ($f['password'] !== $f['password-check']) {
+                // Gestion d'erreur côté utilisateur : mots de passe non identiques
+                Flash::danger("Les mots de passe ne correspondent pas.");
+                View::renderTemplate('User/register.html');
+                return;
             }
 
             // validation
+            $registrationSuccessful = $this->register($f);
+            if ($registrationSuccessful) {
+                // Connexion automatique de l'utilisateur après l'enregistrement
+                $loginSuccessful = $this->login(['email' => $f['email'], 'password' => $f['password']]);
 
-            $this->register($f);
-            // TODO: Rappeler la fonction de login pour connecter l'utilisateur
+                if ($loginSuccessful) {
+                    // Rediriger vers la page d'accueil ou une autre page après la connexion
+                    header('Location: /account');
+                    exit;
+                } else {
+                    // Gestion d'erreur si la connexion échoue
+                    Flash::danger("Enregistrement réussi, mais échec de la connexion automatique.");
+                    View::renderTemplate('User/login.html');
+                    return;
+                }
+            } else {
+                // Gestion d'erreur si l'enregistrement échoue
+                Flash::danger("Échec de l'enregistrement. Veuillez réessayer.");
+                View::renderTemplate('User/register.html');
+                return;
+            }
         }
 
         View::renderTemplate('User/register.html');
     }
 
-    /**
-     * Affiche la page du compte
-     */
+
+
+    /* Affiche la page du compte */
     public function accountAction()
     {
         $articles = Articles::getByUser($_SESSION['user']['id']);
@@ -70,9 +88,7 @@ class User extends \Core\Controller
         ]);
     }
 
-    /*
-     * Fonction privée pour enregister un utilisateur
-     */
+    /* Fonction privée pour enregister un utilisateur */
     private function register($data)
     {
         try {
@@ -88,16 +104,16 @@ class User extends \Core\Controller
             ]);
 
             return $userID;
-
         } catch (Exception $ex) {
             // TODO : Set flash if error : utiliser la fonction en dessous
-            /* Utility\Flash::danger($ex->getMessage());*/
+            // /* Utility\Flash::danger($ex->getMessage());*/
         }
     }
 
-    private function login($data){
+    private function login($data)
+    {
         try {
-            if(!isset($data['email'])){
+            if (!isset($data['email'])) {
                 throw new Exception('TODO');
             }
 
@@ -117,7 +133,6 @@ class User extends \Core\Controller
             );
 
             return true;
-
         } catch (Exception $ex) {
             // TODO : Set flash if error
             /* Utility\Flash::danger($ex->getMessage());*/
@@ -132,7 +147,8 @@ class User extends \Core\Controller
      * @return boolean
      * @since 1.0.2
      */
-    public function logoutAction() {
+    public function logoutAction()
+    {
 
         /*
         if (isset($_COOKIE[$cookie])){
@@ -145,17 +161,21 @@ class User extends \Core\Controller
 
         if (ini_get("session.use_cookies")) {
             $params = session_get_cookie_params();
-            setcookie(session_name(), '', time() - 42000,
-                $params["path"], $params["domain"],
-                $params["secure"], $params["httponly"]
+            setcookie(
+                session_name(),
+                '',
+                time() - 42000,
+                $params["path"],
+                $params["domain"],
+                $params["secure"],
+                $params["httponly"]
             );
         }
 
         session_destroy();
 
-        header ("Location: /");
+        header("Location: /");
 
         return true;
     }
-
 }
