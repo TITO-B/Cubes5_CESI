@@ -1,5 +1,4 @@
 <?php
-// echo "ii";
 
 /**
  * Front controller
