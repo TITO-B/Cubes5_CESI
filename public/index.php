@@ -6,12 +6,21 @@
  * PHP version 7.0
  */
 
+use Core\View;
+
 session_start();
+
+//Récupération des variables de cookies :
+if (isset($_COOKIE["visitorLogged"]) && $_COOKIE["visitorLogged"] && !isset($_SESSION['user'])) {
+    $_SESSION['user'] = array(
+        'id' => $_COOKIE['id'],
+        'username' => $_COOKIE['username']
+    );
+}
 
 /**
  * Composer
  */
-require dirname(__DIR__) . '/vendor/autoload.php';
 require dirname(__DIR__) . '/vendor/autoload.php';
 
 
@@ -31,6 +40,7 @@ $router = new Core\Router();
 // Add the routes
 $router->add('', ['controller' => 'Home', 'action' => 'index']);
 $router->add('login', ['controller' => 'User', 'action' => 'login']);
+$router->add('passwordrecovery', ['controller' => 'User', 'action' => 'passwordrecovery']);
 $router->add('register', ['controller' => 'User', 'action' => 'register']);
 $router->add('logout', ['controller' => 'User', 'action' => 'logout', 'private' => true]);
 $router->add('account', ['controller' => 'User', 'action' => 'account', 'private' => true]);
@@ -48,5 +58,10 @@ try {
         case 'You must be logged in':
             header('Location: /login');
             break;
+        case 'No route matched.':
+            View::renderTemplate('404.html');
+            break;
+        default:
+            View::renderTemplate('500.html');
     }
 }
