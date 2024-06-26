@@ -6,26 +6,29 @@ use App\Config;
 use App\Model\UserRegister;
 use App\Models\Articles;
 use App\Utility\Hash;
-use App\Utility\Flash;
 use App\Utility\Session;
 use \Core\View;
 use Exception;
 use http\Env\Request;
 use http\Exception\InvalidArgumentException;
+use App\Utility\Mail;
+use App\Models\User as UserModel;
 
-/* User controller */
-
+/**
+ * User controller
+ */
 class User extends \Core\Controller
 {
 
-    /* Affiche la page de login */
+    /**
+     * Affiche la page de login
+     */
     public function loginAction()
     {
         if (isset($_POST['submit'])) {
             $f = $_POST;
 
             // TODO: Validation
-
 
             $this->login($f);
 
@@ -36,49 +39,31 @@ class User extends \Core\Controller
         View::renderTemplate('User/login.html');
     }
 
-    /* Page de création de compte */
+    /**
+     * Page de création de compte
+     */
     public function registerAction()
     {
         if (isset($_POST['submit'])) {
             $f = $_POST;
 
             if ($f['password'] !== $f['password-check']) {
-                // Gestion d'erreur côté utilisateur : mots de passe non identiques
-                Flash::danger("Les mots de passe ne correspondent pas.");
-                View::renderTemplate('User/register.html');
-                return;
+                // TODO: Gestion d'erreur côté utilisateur
             }
 
             // validation
-            $registrationSuccessful = $this->register($f);
-            if ($registrationSuccessful) {
-                // Connexion automatique de l'utilisateur après l'enregistrement
-                $loginSuccessful = $this->login(['email' => $f['email'], 'password' => $f['password']]);
 
-                if ($loginSuccessful) {
-                    // Rediriger vers la page d'accueil ou une autre page après la connexion
-                    header('Location: /account');
-                    exit;
-                } else {
-                    // Gestion d'erreur si la connexion échoue
-                    Flash::danger("Enregistrement réussi, mais échec de la connexion automatique.");
-                    View::renderTemplate('User/login.html');
-                    return;
-                }
-            } else {
-                // Gestion d'erreur si l'enregistrement échoue
-                Flash::danger("Échec de l'enregistrement. Veuillez réessayer.");
-                View::renderTemplate('User/register.html');
-                return;
-            }
+            $this->register($f);
+            // TODO: Rappeler la fonction de login pour connecter l'utilisateur
+            $this->login($f);
         }
 
         View::renderTemplate('User/register.html');
     }
 
-
-
-    /* Affiche la page du compte */
+    /**
+     * Affiche la page du compte
+     */
     public function accountAction()
     {
         $articles = Articles::getByUser($_SESSION['user']['id']);
@@ -88,7 +73,9 @@ class User extends \Core\Controller
         ]);
     }
 
-    /* Fonction privée pour enregister un utilisateur */
+    /*
+     * Fonction privée pour enregister un utilisateur
+     */
     private function register($data)
     {
         try {
@@ -106,7 +93,7 @@ class User extends \Core\Controller
             return $userID;
         } catch (Exception $ex) {
             // TODO : Set flash if error : utiliser la fonction en dessous
-            // /* Utility\Flash::danger($ex->getMessage());*/
+            /* Utility\Flash::danger($ex->getMessage());*/
         }
     }
 
@@ -130,6 +117,7 @@ class User extends \Core\Controller
             $_SESSION['user'] = array(
                 'id' => $user['id'],
                 'username' => $user['username'],
+                'email' => $user['email'],
             );
 
             return true;
@@ -173,9 +161,40 @@ class User extends \Core\Controller
         }
 
         session_destroy();
+        setcookie('PHPSESSID', 'localhost', time() - 86400, '/');
 
         header("Location: /");
 
         return true;
+    }
+
+    /**
+     * permet à l'utilisateur de recevoir un nouveau mot de passe par mail
+     */
+    public function passwordForgottenAction()
+    {
+
+        if ($_SERVER['REQUEST_METHOD'] == "GET") {
+            View::renderTemplate('User/forgotten.html');
+        } else {
+            $password = UserModel::resetPassword($_POST["email"]);
+            Mail::sendMail($_POST["email"], "Votre nouveau mot de passe est " . $password, "Votre nouveau mot de passe !");
+            header("location:/login");
+        }
+    }
+
+    /**
+     * permet à l'utilisateur de paramétrer un nouveau mot de passe
+     */
+    public function resetPasswordAction()
+    {
+
+        if ($_SERVER['REQUEST_METHOD'] == "GET") {
+            View::renderTemplate('User/reset.html');
+        } else {
+            $password = UserModel::resetPasswordByUser($_POST["password"]);
+
+            header("location:/");
+        }
     }
 }

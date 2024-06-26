@@ -20,6 +20,9 @@ class View
      */
     public static function render($view, $args = [])
     {
+
+
+
         extract($args, EXTR_SKIP);
 
         $file = dirname(__DIR__) . "/App/Views/$view";  // relative to Core directory
@@ -41,6 +44,14 @@ class View
      */
     public static function renderTemplate($template, $args = [])
     {
+        if (isset($_GET["cod"])) {
+            if ($_GET["cod"] == "errem") {
+                echo ('<script> alert("L\'email est invalide")</script>');
+            }
+            if ($_GET["cod"] == "errlog") {
+                echo ('<script> alert("les identifiants ne sont pas corrects")</script>');
+            }
+        }
         static $twig = null;
 
         if ($twig === null) {

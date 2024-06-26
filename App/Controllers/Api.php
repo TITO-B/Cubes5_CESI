@@ -33,7 +33,8 @@ class Api extends \Core\Controller
      *
      * @throws Exception
      */
-    public function CitiesAction(){
+    public function CitiesAction()
+    {
 
         $cities = Cities::search($_GET['query']);
 

@@ -5,19 +5,22 @@ namespace App\Utility;
 /**
  * Hash:
  */
-class Hash {
+class Hash
+{
 
     /**
      * Génère et retourne un hash
      */
-    public static function generate($string, $salt = "") {
-        return(hash("sha256", $string . $salt));
+    public static function generate($string, $salt = "")
+    {
+        return (hash("sha256", $string . $salt));
     }
 
     /**
      * Génère et retourne un salt
      */
-    public static function generateSalt($length) {
+    public static function generateSalt($length)
+    {
         $salt = "";
         $charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/\\][{}\'\";:?.>,<!@#$%^&*()-_=+|";
         for ($i = 0; $i < $length; $i++) {
@@ -29,8 +32,8 @@ class Hash {
     /**
      * Génère et retourne un UID
      */
-    public static function generateUnique() {
-        return(self::generate(uniqid()));
+    public static function generateUnique()
+    {
+        return (self::generate(uniqid()));
     }
-
 }
