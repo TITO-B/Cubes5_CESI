@@ -14,28 +14,6 @@ use App\Utility;
 class Articles extends Model
 {
 
-
-    /**
-     * donne une image par défaut aux produits qui n'en ont pas
-     * @access public
-     * @param array $a
-     * @return array
-     * 
-     */
-    public static function fillNull($a)
-    {
-
-        for ($i = 0; $i < count($a); $i++) {
-            if (array_key_exists("picture", $a[$i])) {
-                if ($a[$i]["picture"] == null) {
-                    $a[$i]["picture"] = "default.png";
-                }
-            }
-        }
-        return $a;
-    }
-
-
     /**
      * ?
      * @access public
@@ -61,8 +39,7 @@ class Articles extends Model
 
         $stmt = $db->query($query);
 
-        $a = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        return Articles::fillNull($a);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
     /**
@@ -76,15 +53,14 @@ class Articles extends Model
         $db = static::getDB();
 
         $stmt = $db->prepare('
-        SELECT articles.*, users.username, users.email FROM articles, users
-        WHERE articles.user_id = users.id AND
-         articles.id = ? 
-        LIMIT 1');
+            SELECT * FROM articles
+            INNER JOIN users ON articles.user_id = users.id
+            WHERE articles.id = ? 
+            LIMIT 1');
 
         $stmt->execute([$id]);
 
-        $a = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        return Articles::fillNull($a);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
     /**
@@ -122,8 +98,7 @@ class Articles extends Model
 
         $stmt->execute([$id]);
 
-        $a = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        return Articles::fillNull($a);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
     /**
@@ -143,8 +118,7 @@ class Articles extends Model
 
         $stmt->execute();
 
-        $a = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        return Articles::fillNull($a);
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
 
