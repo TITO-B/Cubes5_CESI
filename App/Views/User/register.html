@@ -4,14 +4,14 @@
 
 {% block body %}
 <div class="container-fluid bg-image">
-    <div class="row registerRow">
+    <div class="row">
         <div class="login-wraper">
             <div class="hidden-xs">
-                <img src="images/login.png" style="width: 50%" alt="">
+                <img src="images/login.jpg" alt="">
             </div>
-            <div class="banner-text hidden-xs" style="background-color: white">
+            <div class="banner-text hidden-xs">
                 <div class="line"></div>
-                <div class="b-text" style="color: black">
+                <div class="b-text">
                     Des <span class="color-active">centaines<br> </span> <span class="color-b1">d'articles vous
                 </span>attendent
                 </div>
@@ -20,30 +20,20 @@
                 </div>
             </div>
             <div class="login-window">
-
-                <div class="l-head " style="margin-top: 80px">
-
+                <div class="l-head">
                     Créer un compte
                 </div>
-
                 <div class="l-form">
-                    {% if messageErreur is not empty %}
-                    <span style="color: red">
-                        {{ messageErreur }}
-                        <br><br>
-                    </span>
-                    {% endif %}
-
                     <form method="post" action="">
                         <div class="form-group">
                             <label for="username">Nom d'utilisateur</label>
                             <input type="text" class="form-control" id="username" name="username"
-                                   placeholder="John Doe" value="{{ usernameValue }}">
+                                   placeholder="John Doe">
                         </div>
                         <div class="form-group">
                             <label for="exampleInputEmail1">Email</label>
                             <input type="email" class="form-control" id="exampleInputEmail1" name="email"
-                                   placeholder="exemple@gmail.com" value="{{ emailValue }}">
+                                   placeholder="exemple@gmail.com">
                         </div>
                         <div class="form-group">
                             <label for="exampleInputPassword1">Mot de passe</label>
