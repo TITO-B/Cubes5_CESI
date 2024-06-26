@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use App\Utility\Regex;
 use Core\Model;
 use App\Core;
 use DateTime;
 use Exception;
 use App\Utility;
+use function Sodium\add;
 
 /**
  * Articles Model
@@ -36,10 +38,14 @@ class Articles extends Model
             case '':
                 break;
         }
+        try {
+            $stmt = $db->query($query);
 
-        $stmt = $db->query($query);
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (\Exception $e) {
 
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            echo "<script>console.log('Debug Objects: " . $e . "' );</script>";
+        }
     }
 
     /**
@@ -53,14 +59,25 @@ class Articles extends Model
         $db = static::getDB();
 
         $stmt = $db->prepare('
-            SELECT * FROM articles
+            SELECT articles.id,articles.name,articles.description,articles.published_date,articles.views,articles.picture,users.username,users.email FROM articles
             INNER JOIN users ON articles.user_id = users.id
             WHERE articles.id = ? 
             LIMIT 1');
 
-        $stmt->execute([$id]);
+        // $stmt = $db->prepare('
+        // SELECT * FROM articles
+        // INNER JOIN users ON articles.user_id = users.id
+        // WHERE articles.id = ? 
+        // LIMIT 1');
 
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        try {
+            $stmt->execute([$id]);
+
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (\Exception $e) {
+
+            echo "<script>console.log('Debug Objects: " . $e . "' );</script>";
+        }
     }
 
     /**
@@ -77,8 +94,12 @@ class Articles extends Model
             UPDATE articles 
             SET articles.views = articles.views + 1
             WHERE articles.id = ?');
+        try {
+            $stmt->execute([$id]);
+        } catch (\Exception $e) {
 
-        $stmt->execute([$id]);
+            echo "<script>console.log('Debug Objects: " . $e . "' );</script>";
+        }
     }
 
     /**
@@ -90,15 +111,66 @@ class Articles extends Model
     public static function getByUser($id)
     {
         $db = static::getDB();
-
-        $stmt = $db->prepare('
+        $query = '
             SELECT *, articles.id as id FROM articles
             LEFT JOIN users ON articles.user_id = users.id
-            WHERE articles.user_id = ?');
+            WHERE articles.user_id = ? ';
 
-        $stmt->execute([$id]);
+        if (isset($_GET['arg'])) {
+            if ($_GET['arg'] == 'pop') {
+                $query .= 'order by views desc';
+            }
+            if ($_GET['arg'] == 'rec') {
+                $query .= 'order by published_date desc';
+            }
+        }
 
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $stmt = $db->prepare($query);
+        try {
+            $stmt->execute([$id]);
+
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (\Exception $e) {
+
+            echo "<script>console.log('Debug Objects: " . $e . "' );</script>";
+        }
+    }
+
+    // NEW
+    public static function getcountByUser($id)
+    {
+        $db = static::getDB();
+
+        $stmt = $db->prepare('
+        SELECT COUNT(*) as nb_art FROM articles WHERE user_id = ?');
+        try {
+            $stmt->execute([$id]);
+            $value = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+
+            return $value['nb_art'];
+        } catch (\Exception $e) {
+
+            echo "<script>console.log('Debug Objects: " . $e . "' );</script>";
+        }
+    }
+
+    // NEW
+    public static function getcountviewByUser($id)
+    {
+        $db = static::getDB();
+
+        $stmt = $db->prepare('
+        SELECT SUM(views) as nb_vue FROM articles WHERE user_id = ?');
+        try {
+            $stmt->execute([$id]);
+            $value = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+            return $value['nb_vue'];
+        } catch (\Exception $e) {
+
+            echo "<script>console.log('Debug Objects: " . $e . "' );</script>";
+        }
     }
 
     /**
@@ -115,12 +187,33 @@ class Articles extends Model
             SELECT *, articles.id as id FROM articles
             INNER JOIN users ON articles.user_id = users.id
             ORDER BY published_date DESC LIMIT 10');
+        try {
+            $stmt->execute();
 
-        $stmt->execute();
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (\Exception $e) {
 
-        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            echo "<script>console.log('Debug Objects: " . $e . "' );</script>";
+        }
     }
 
+    //NEW
+    public static function autocomplete($data)
+    {
+        $db = static::getDB();
+        $sql = "SELECT ville_nom_reel FROM villes_france WHERE ville_nom_reel like  :city limit 3;";
+        $stmt = $db->prepare($sql);
+        $city = $data . "%";
+
+        $stmt->bindParam("city", $city);
+
+        try {
+            $stmt->execute();
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (\Exception $e) {
+            echo $e;
+        }
+    }
 
 
     /**
@@ -131,20 +224,34 @@ class Articles extends Model
      */
     public static function save($data)
     {
-        $db = static::getDB();
 
-        $stmt = $db->prepare('INSERT INTO articles(name, description, user_id, published_date) VALUES (:name, :description, :user_id,:published_date)');
+        $data['name'] = Regex::regexEmail($data['name']);
+        $data['description'] = Regex::regexEmail($data['description']);
+        $data['city'] = Regex::regexEmail($data['city']);
 
-        $published_date =  new DateTime();
-        $published_date = $published_date->format('Y-m-d');
-        $stmt->bindParam(':name', $data['name']);
-        $stmt->bindParam(':description', $data['description']);
-        $stmt->bindParam(':published_date', $published_date);
-        $stmt->bindParam(':user_id', $data['user_id']);
+        if (
+            isset($data['name']) && isset($data['description']) && isset($data['user_id']) && isset($data['city'])
+            && $data['name'] != "" && $data['description'] != "" && $data['city'] != "" && $data['user_id'] != ""
+        ) {
+            $db = static::getDB();
+            $stmt = $db->prepare('INSERT INTO articles(name, description, user_id,city, published_date) VALUES (:name, :description, :user_id,:city,:published_date)');
+            $published_date = new DateTime();
+            $published_date = $published_date->format('Y-m-d');
+            $stmt->bindParam(':name', $data['name']);
+            $stmt->bindParam(':description', $data['description']);
+            $stmt->bindParam(':published_date', $published_date);
+            $stmt->bindParam(':user_id', $data['user_id']);
+            $stmt->bindParam(':city', $data['city']);
+            try {
+                $stmt->execute();
 
-        $stmt->execute();
+                return $db->lastInsertId();
+            } catch (\Exception $e) {
 
-        return $db->lastInsertId();
+                echo "<script>console.log('Debug Objects: " . $e . "' );</script>";
+            }
+        } else {
+        }
     }
 
     public static function attachPicture($articleId, $pictureName)
@@ -156,7 +263,47 @@ class Articles extends Model
         $stmt->bindParam(':picture', $pictureName);
         $stmt->bindParam(':articleid', $articleId);
 
+        try {
+            $stmt->execute();
+        } catch (\Exception $e) {
+            echo "<script>console.log('Debug Objects: " . $e . "' );</script>";
+        }
+    }
 
-        $stmt->execute();
+    //NEW
+    public static function searchByWording($object)
+    {
+        $db = static::getDB();
+        $sql = "SELECT *,CONCAT(LEFT(description,20),'...') as description FROM articles WHERE name LIKE :name OR description LIKE :description";
+        try {
+            $request = $db->prepare($sql);
+            $request->execute([
+                'name' => '%' . $object . '%',
+                'description' => '%' . $object . '%'
+            ]);
+            return $request->fetchAll();
+        } catch (\Exception $e) {
+            echo "<script>console.log('Debug Objects: " . $e . "' );</script>";
+        }
+    }
+    //NEW
+    public static function searchAroundMe($cities)
+    {
+        $db = static::getDB();
+        $arrayArticles = [];
+        foreach ($cities as $city) {
+            $cityName = $city[0];
+            $sql = "SELECT *,CONCAT(LEFT(description,20),'...') as description FROM articles WHERE articles.city =:city";
+            $request = $db->prepare($sql);
+            $request->execute(['city' => $cityName]);
+            $result = $request->fetchAll();
+            if (count($result) > 0) {
+                foreach ($result as $item) {
+                    $arrayArticles[] = $item;
+                }
+            }
+        }
+
+        return $arrayArticles;
     }
 }

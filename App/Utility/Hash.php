@@ -21,11 +21,14 @@ class Hash
      */
     public static function generateSalt($length)
     {
+
+
         $salt = "";
         $charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/\\][{}\'\";:?.>,<!@#$%^&*()-_=+|";
         for ($i = 0; $i < $length; $i++) {
             $salt .= $charset[mt_rand(0, strlen($charset) - 1)];
         }
+
         return $salt;
     }
 
