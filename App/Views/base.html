@@ -8,9 +8,6 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="/favicon.png">
-    <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#4285f4" />
-    <link rel="apple-touch-icon" href="images/logo.png" />
 
     <title>Vide Grenier En Ligne | {% block title %}{% endblock %}</title>
 
@@ -28,7 +25,6 @@
 </head>
 <body>
 <!-- logo, menu, search, avatar -->
-
 <div class="container-fluid ">
     <div class="row">
         <div class="navbar-container">
@@ -94,9 +90,7 @@
         </div>
     </div>
 </div>
-<!-- /logo ----------------------------------------------------------------------->
-{% if user.username|length > 0 %}
-
+<!-- /logo -->
 
 <div class="mobile-menu">
     <div class="mobile-menu-head">
@@ -128,38 +122,10 @@
 
             </ul>
         </div>
-        <a href="/logout" class="btn mobile-menu-logout">Déconnexion</a>
-    </div>
-</div>
-{% else %}
-
-<div class="mobile-menu">
-    <div class="mobile-menu-head">
-        <a href="#" class="mobile-menu-close"></a>
-        <a class="navbar-brand" href="index.html">
-            <img src="images/logo.png" alt="Vide Grenier en ligne name" class="logo" />
-            <span>Vide Grenier en ligne</span>
-        </a>
-    </div>
-    <div class="mobile-menu-content">
-        <div class="mobile-menu-list">
-            <ul>
-                <li>
-                    <a href="/">
-                        <i class="cv cvicon-cv-playlist"></i>
-                        <p>Accueil</p>
-                    </a>
-                </li>
-               
-
-            </ul>
-        </div>
-        <a href="/register" class="btn mobile-menu-logout">Connexion</a>
+        <a href="#" class="btn mobile-menu-logout">Déconnexion</a>
     </div>
 </div>
 
-
-{% endif %}
     {% block body %}
     {% endblock %}
     <footer>
