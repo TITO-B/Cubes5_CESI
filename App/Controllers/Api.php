@@ -8,12 +8,19 @@ use \Core\View;
 use Exception;
 
 /**
- * API controller
+ * @OA\Info(title="API Vide Grenier", version="1.0")
  */
 class Api extends \Core\Controller
 {
 
     /**
+     * @OA\Get(
+     *     path="/CUBES5_CESI/Controllers/Api.php",
+     *     summary="Affiche tous les produits",
+     *     tags={"Products"},
+     *     @OA\Response(response="200", description="An example resource"),
+     *     @OA\Response(response="404", description="Not found"),
+     * )
      * Affiche la liste des articles / produits pour la page d'accueil
      *
      * @throws Exception
@@ -29,6 +36,13 @@ class Api extends \Core\Controller
     }
 
     /**
+     * @OA\Get(
+     *     path="/CUBES5_CESI/Controllers/Api.php",
+     *     summary="Affiche tous les produits",
+     *     tags={"Cities"},
+     *     @OA\Response(response="200", description="An example resource"),
+     *     @OA\Response(response="404", description="Not found"),
+     * )
      * Recherche dans la liste des villes
      *
      * @throws Exception
