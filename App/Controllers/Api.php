@@ -15,7 +15,7 @@ class Api extends \Core\Controller
 
     /**
      * @OA\Get(
-     *     path="/CUBES5_CESI/Controllers/Api.php",
+     *     path="/Api/Products",
      *     summary="Affiche tous les produits",
      *     tags={"Products"},
      *     @OA\Response(response="200", description="An example resource"),
@@ -37,7 +37,7 @@ class Api extends \Core\Controller
 
     /**
      * @OA\Get(
-     *     path="/CUBES5_CESI/Controllers/Api.php",
+     *     path="Api/Cities",
      *     summary="Affiche tous les produits",
      *     tags={"Cities"},
      *     @OA\Response(response="200", description="An example resource"),

@@ -1,7 +1,7 @@
 <?php
-require("../../vendor/autoload.php");
+require dirname(__DIR__). "../../vendor/autoload.php";
 
-$openapi = \OpenApi\Generator::scan([$_SERVER['DOCUMENT_ROOT'].'/CUBES5_CESI/App/Controllers']);
+$openapi = \OpenApi\Generator::scan('../../App/Controllers');
 
 header('Content-Type: application/json');
 echo $openapi->toJSON();
