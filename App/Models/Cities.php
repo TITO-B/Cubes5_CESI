@@ -33,7 +33,6 @@ class Cities extends Model
         }
     }
 
-    // NEW
     public static function getLongitude($city)
     {
         $db = static::getDB();
@@ -49,7 +48,6 @@ class Cities extends Model
         }
     }
 
-    //NEW
     public static function getLatitude($city)
     {
         $db = static::getDB();
@@ -65,7 +63,6 @@ class Cities extends Model
         }
     }
 
-    // NEW
     public static function getAllCitiesAroundMe($city)
     {
         $db = static::getDB();
