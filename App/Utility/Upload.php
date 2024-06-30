@@ -5,7 +5,7 @@ namespace App\Utility;
 class Upload
 {
 
-    // rajotue gestion exception
+
     public static function uploadFile($file, $fileName)
     {
         try {

@@ -23,13 +23,9 @@ class User extends \Core\Controller
 
     /**
      * Affiche la page de login
-     * 
-     * Ajout de la gestion des code d'erreur, du cookie de session
      */
-    // 
     public function loginAction()
     {
-        // Gestion Code Erreur
         if (isset($_GET["code"])) {
             switch ($_GET["code"]) {
                 case "errem":
@@ -46,12 +42,10 @@ class User extends \Core\Controller
             $messageErreur = "";
         }
 
-        // Gestion du cookie de Session
         if ((isset($_COOKIE["visitorLogged"]) && $_COOKIE["visitorLogged"]) || (isset($_SESSION['user']['username']))) {
             header('Location: /');
         }
 
-        // Gestion de la connexion
         if (isset($_POST['submit'])) {
             try {
                 // Si login OK, redirige vers le compte
@@ -73,12 +67,9 @@ class User extends \Core\Controller
 
     /**
      * Page de création de compte
-     * Ajout de la gestion des code d'erreur, de va vérificatino des identifiant avec code erreur,
-     * et du login direct apres l'inscription 
      */
     public function registerAction()
     {
-        // Gestion Code Erreur
         if (isset($_GET["code"])) {
             switch ($_GET["code"]) {
                 case "existe":
@@ -107,12 +98,10 @@ class User extends \Core\Controller
             $messageErreur = "";
         }
 
-        // Gestion de l'inscription
         if (isset($_POST['submit'])) {
             try {
                 $f = $_POST;
                 $email = $f['email'];
-
                 //regex de vérification des emails
                 $email = Regex::regexEmail($email);
 
@@ -163,10 +152,8 @@ class User extends \Core\Controller
             ]);
         }
     }
-
     /**
      * Affiche la page du compte
-     * Ajout d'information sur le profil utilisateur
      */
     public function accountAction()
     {
@@ -195,7 +182,6 @@ class User extends \Core\Controller
 
     /*
      * Fonction privée pour enregister un utilisateur
-     * Ajout information dan stableau data pour login et appel de login
      */
     private function register($data)
     {
@@ -221,11 +207,6 @@ class User extends \Core\Controller
         $this->login($data);
     }
 
-
-    /*
-     * Fonction privée pour login un utilisateur
-     * Vérification des infos, connexion de l'utilisateur, et cookie + gestion code erreur
-     */
     private function login($data)
     {
         try {
@@ -236,7 +217,6 @@ class User extends \Core\Controller
                 //regex de vérification des emails
                 $email = Regex::regexEmail($data['email']);
 
-                // Gestion e
                 if ($email == 'invalid email') {
                     header('Location: /login?code=errem');
                     return false;
@@ -272,7 +252,6 @@ class User extends \Core\Controller
         }
     }
     /**
-     * 
      * Logout: Delete cookie and session. Returns true if everything is okay,
      * otherwise turns false.
      * @access public
@@ -294,63 +273,6 @@ class User extends \Core\Controller
             header("Location: /");
             return true;
         } catch (\Exception $e) {
-            echo "<script>console.log('Debug Objects: " . $e . "' );</script>";
-        }
-    }
-
-    /**
-     * NOUVEAU
-     * Affiche la page du compte
-     */
-    public function passwordrecoveryAction()
-    {
-        try {
-
-            if (isset($_POST["email"]) && !empty($_POST["email"])) {
-                $email = Regex::regexEmail($_POST['email']);
-
-                if ($email == 'invalid email') {
-                    View::renderTemplate('User/passwordrecovery.html', [
-                        'messageErreur' => "L'adresse email n'est pas valide"
-                    ]);
-                }
-
-                //Création du mot de passe aléatoire :
-                $comb = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890';
-                $pass = array();
-                $combLen = strlen($comb) - 1;
-                for ($i = 0; $i < 12; $i++) {
-                    $n = rand(0, $combLen);
-                    $pass[] = $comb[$n];
-                }
-
-                $messagePourMail = "Voici votre nouveau mot de passe : " . implode($pass);
-
-                $salt = Hash::generateSalt(32);
-
-                $newPassword = Hash::generate(implode($pass), $salt);
-
-                var_dump("Password = " . $newPassword);
-                var_dump("Salt = " . $salt);
-
-                if (\App\Models\User::updatePasswordFromEmail($_POST["email"], $newPassword, $salt)) {
-                    $resultSendMail = SendMail::sendOneMail($_POST["email"], 'Réinitialisation de votre mot de passe !', $messagePourMail);
-
-                    if ($resultSendMail) {
-                        View::renderTemplate('User/passwordrecovery.html', [
-                            "messageSucces" => "Un nouveau mot de passe a été généré, si cette adresse email est lié à un compte, vous recevrez le message dans quelques instants."
-                        ]);
-                    }
-                } else {
-                    View::renderTemplate('User/passwordrecovery.html', [
-                        "messageErreur" => "Une erreur c'est produite pendant la création du nouveau mot de passe, veuillez réessayer plus tard"
-                    ]);
-                }
-            }
-
-            View::renderTemplate('User/passwordrecovery.html');
-        } catch (\Exception $e) {
-
             echo "<script>console.log('Debug Objects: " . $e . "' );</script>";
         }
     }

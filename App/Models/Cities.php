@@ -33,6 +33,7 @@ class Cities extends Model
         }
     }
 
+
     public static function getLongitude($city)
     {
         $db = static::getDB();

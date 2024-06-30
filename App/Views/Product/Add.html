@@ -17,64 +17,35 @@
 
     <div class="container mt-30">
         <form action="" method="post" enctype="multipart/form-data">
-            <div class="row addForm">
+            <div class="row">
                 <div class="col-lg-6">
                     <div class="u-form">
                         <div class="row">
                             <div class="col-lg-12">
                                 <div class="form-group">
                                     <label for="e1">Titre</label>
-
-                                    {% if titre is  null %}
-
-                                    <input type="text" name="name" class="form-control" id="e1" placeholder="Jeu de cartes (rare)">
-                                    {% else %}
-                                    <input type="text" name="name" class="form-control" id="e1" value="{{titre}}" placeholder="Jeu de cartes (rare)">
-                                    {% endif %}
-
+                                    <input type="text" name="name" class="form-control" id="e1"
+                                           placeholder="Jeu de cartes (rare)">
                                 </div>
                             </div>
                             <div class="col-lg-12">
                                 <div class="form-group">
                                     <label for="e2">Description</label>
-
-                                    {% if description is  null %}
-
                                     <textarea class="form-control" name="description" id="e2" rows="3"></textarea>
-                                    {% else %}
-
-                                    <textarea class="form-control" name="description"  id="e2" rows="3">{{description}}</textarea>
-                                    {% endif %}
-
                                 </div>
                             </div>
 
                             <div class="col-lg-12">
                                 <div class="form-group">
                                     <label for="e2">Ville</label>
-                                    {% if ville is  null %}
-
-                                    <input list="browsers"  class="form-control cityAutoComplete" id="search-box"  name="city" type="text" autocomplete="on"/>
-
-                                    <div id="suggesstion-box"></div>
-
-
-
-                                    {% else %}
-
-                                    <input class="form-control cityAutoComplete" id="search-box" value="{{ville}}" name="city" type="text" autocomplete="on"/>
-                                    <div id="suggesstion-box"></div>
-
-
-                                    {% endif %}
-
+                                    <input class="form-control cityAutoComplete" type="text" autocomplete="off"/>
                                 </div>
                             </div>
 
                             <div class="col-lg-12">
                                 <div class="form-group">
                                     <label for="e3">Image</label>
-                                    <input type="file" accept=".jpg, .jpeg, .png" class="form-control" name="picture" id="e3" rows="3"/>
+                                    <input type="file" class="form-control" name="picture" id="e3" rows="3"/>
                                 </div>
                             </div>
                         </div>
@@ -98,32 +69,21 @@
 
 {% block javascript %}
     <script type="text/javascript">
-        $(document).ready(function(){
-            $("#search-box").keyup(function(){
-
-                console.log('keyword='+$(this).val())
-
-                $.ajax({
-                    type: "POST",
-                    url: "/product",
-                    data:'keyword='+$(this).val(),
-
-                    beforeSend: function(){
-                        $("#search-box").css("background","#FFF url(LoaderIcon.gif) no-repeat 165px");
-                    },
-
-                    success: function(data){
-                        $("#suggesstion-box").show();
-                        $("#suggesstion-box").html(data);
-                        $("#search-box").css("background","#FFF");
-                    }
-                });
-            });
+        $('.cityAutoComplete').autoComplete({
+            resolver: 'custom',
+            events: {
+                search: function (qry, callback) {
+                    // let's do a custom ajax call
+                    $.ajax(
+                        '/api/cities',
+                        {
+                            data: { 'query': qry}
+                        }
+                    ).done(function (res) {
+                        callback(res)
+                    });
+                }
+            }
         });
-
-        function selectCountry(val) {
-            $("#search-box").val(val);
-            $("#suggesstion-box").hide();
-        }
     </script>
 {% endblock %}

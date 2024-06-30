@@ -40,6 +40,15 @@ services:
       - "8080:80"
     networks:
       - lamp-network
+  
+  maildev:
+    hostname: maildev
+    image: maildev/maildev
+    command: bin/maildev --web 80 --smtp 25 --hide-extensions STARTTLS
+    restart: always
+    ports:
+      - "1080:80"
+      - "25:25"
 
 networks:
   lamp-network:
