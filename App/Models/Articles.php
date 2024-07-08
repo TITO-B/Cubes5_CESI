@@ -198,22 +198,22 @@ class Articles extends Model
     }
 
     //NEW
-    public static function autocomplete($data)
-    {
-        $db = static::getDB();
-        $sql = "SELECT ville_nom_reel FROM villes_france WHERE ville_nom_reel like  :city limit 3;";
-        $stmt = $db->prepare($sql);
-        $city = $data . "%";
+    // public static function autocomplete($data)
+    // {
+    //     $db = static::getDB();
+    //     $sql = "SELECT ville_nom_reel FROM villes_france WHERE ville_nom_reel like  :city limit 3;";
+    //     $stmt = $db->prepare($sql);
+    //     $city = $data . "%";
 
-        $stmt->bindParam("city", $city);
+    //     $stmt->bindParam("city", $city);
 
-        try {
-            $stmt->execute();
-            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        } catch (\Exception $e) {
-            echo $e;
-        }
-    }
+    //     try {
+    //         $stmt->execute();
+    //         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    //     } catch (\Exception $e) {
+    //         echo $e;
+    //     }
+    // }
 
 
     /**
@@ -224,24 +224,19 @@ class Articles extends Model
      */
     public static function save($data)
     {
-
-        $data['name'] = Regex::regexEmail($data['name']);
-        $data['description'] = Regex::regexEmail($data['description']);
-        $data['city'] = Regex::regexEmail($data['city']);
-
         if (
-            isset($data['name']) && isset($data['description']) && isset($data['user_id']) && isset($data['city'])
-            && $data['name'] != "" && $data['description'] != "" && $data['city'] != "" && $data['user_id'] != ""
+            isset($data['name']) && isset($data['description']) && isset($data['user_id']) 
+            && $data['name'] != "" && $data['description'] != "" && $data['user_id'] != ""
         ) {
             $db = static::getDB();
-            $stmt = $db->prepare('INSERT INTO articles(name, description, user_id,city, published_date) VALUES (:name, :description, :user_id,:city,:published_date)');
-            $published_date = new DateTime();
-            $published_date = $published_date->format('Y-m-d');
+            $stmt = $db->prepare('INSERT INTO articles(name, description,published_date, user_id, views, picture) VALUES (:name, :description, :published_date, :user_id, :views , :picture)');
+            
             $stmt->bindParam(':name', $data['name']);
             $stmt->bindParam(':description', $data['description']);
-            $stmt->bindParam(':published_date', $published_date);
+            $stmt->bindParam(':published_date', $data['published_date']);
             $stmt->bindParam(':user_id', $data['user_id']);
-            $stmt->bindParam(':city', $data['city']);
+            $stmt->bindParam(':views', $data['views']);
+            $stmt->bindParam(':picture', $data['pictureName']);
             try {
                 $stmt->execute();
 
@@ -253,6 +248,7 @@ class Articles extends Model
         } else {
         }
     }
+
 
     public static function attachPicture($articleId, $pictureName)
     {
