@@ -32,9 +32,9 @@ class Api extends \Core\Controller
     public function ProductsAction()
     {
         try {
-            $query = $_GET['sort'];
+            $filter = $_GET['sort'];
 
-            $articles = Articles::getAll($query);
+            $articles = Articles::getAll($filter);
 
             header('Content-Type: application/json');
             echo json_encode($articles);
