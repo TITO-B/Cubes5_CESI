@@ -14,16 +14,13 @@ class UserTest extends TestCase
     public function testregisterAction()
     {
         $_POST['submit']="submit";
-        $_POST['password'] = "passwd";
-        $_POST['password-check'] = "passwd1";
+        $_POST['password'] = "passwdaa1";
+        $_POST['password-check'] = "passwdaa1";
         $data= null;
         $toto = new User($data);
         $client = $toto->register();
         $this->assertEquals($data,$client);
 
     }
-//    public function testlogoutAction()
-//    {
-//
-//    }
+
 }
