@@ -8,6 +8,8 @@ use \Core\View;
 use \Core\SendMail;
 use App\Utility\Regex;
 
+use DateTime;
+
 /**
  * Product controller
  */
@@ -24,20 +26,20 @@ class Product extends \Core\Controller
     {
 
         // A COMPRENDRE
-        if (isset($_POST['keyword'])) {
-            $text =  Articles::autocomplete($_POST['keyword']);
-            $i = 0;
-            $datalist = ('<datalist id="browsers">');
-            foreach ($text as $city) {
-                if (strlen($_POST['keyword'])  > 1) {
-                    $datalist .= ('<option value=" ' . $text[$i]["ville_nom_reel"] . '"> ');
-                    $i++;
-                }
-            }
-            $datalist .= ('<datalist id="browsers">');
-            echo $datalist;
-            die();
-        }
+        // if (isset($_POST['keyword'])) {
+        //     $text =  Articles::autocomplete($_POST['keyword']);
+        //     $i = 0;
+        //     $datalist = ('<datalist id="browsers">');
+        //     foreach ($text as $city) {
+        //         if (strlen($_POST['keyword'])  > 1) {
+        //             $datalist .= ('<option value=" ' . $text[$i]["ville_nom_reel"] . '"> ');
+        //             $i++;
+        //         }
+        //     }
+        //     $datalist .= ('<datalist id="browsers">');
+        //     echo $datalist;
+        //     die();
+        // }
         // --
 
 
@@ -48,14 +50,24 @@ class Product extends \Core\Controller
         if (isset($_POST['submit'])) {
             try {
                 if (
-                    isset($_POST['name']) && isset($_POST['city']) && isset($_POST['description']) && $_POST['name'] != ""
+                    isset($_POST['name']) && isset($_POST['description']) && $_POST['name'] != ""
                     && isset($_FILES['picture']["name"]) && $_FILES['picture']["name"] != ""
-                    && $_POST['description'] != "" && $_POST['city'] != ""
+                    && $_POST['description'] != ""
                 ) {
 
-                    $f = $_POST;
-                    $f['user_id'] = $_SESSION['user']['id'];
-                    $id = Articles::save($f);
+                    $data['name'] = $_POST['name'];
+                    $data['description'] = $_POST['description'];
+                    $data['pictureName'] = $_FILES['picture']["name"];
+                    $data['views'] = 1;
+                    
+                    $pub_date = new DateTime();
+                    $published_date = $pub_date->format('Y-m-d');
+                    $data['published_date'] = $published_date;
+
+                    $data['user_id'] = $_SESSION['user']['id'];
+                    
+                    $id = Articles::save($data);
+
                     $pictureName = Upload::uploadFile($_FILES['picture'], $id);
 
                     Articles::attachPicture($id, $pictureName);
@@ -66,7 +78,7 @@ class Product extends \Core\Controller
                         View::renderTemplate('Product/Add.html', [
                             'titre' => $_POST['name'],
                             'description' => $_POST['description'],
-                            'ville' => $_POST['city'],
+                            // 'ville' => $_POST['city'],
                         ]);
                     }
                 } else {
@@ -74,7 +86,7 @@ class Product extends \Core\Controller
                     View::renderTemplate('Product/Add.html', [
                         'titre' => $_POST['name'],
                         'description' => $_POST['description'],
-                        'ville' => $_POST['city'],
+                        // 'ville' => $_POST['city'],
                     ]);
                 }
             } catch (\Exception $e) {
