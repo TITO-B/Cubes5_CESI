@@ -1,0 +1,23 @@
+Script started on 2024-07-09 09:17:59+00:00 [TERM="xterm-256color" TTY="/dev/pts/0" COLUMNS="120" LINES="16"]
+/mnt/host/c/Users/vince/desktop/projet en cours/Cubes5_CESI # [6n/mnt/host/c/Users/vince/desktop/projet en cours/Cubes5_CESI # script[J/mnt/host/c/Users/vince/desktop/projet en cours/Cubes5_CESI # script.sh[Jscript.sh[J[J[J[J[J[J[J[J[J/mnt/host/c/Users/vince/desktop/projet en cours/Cubes5_CESI # [J/mnt/host/c/Users/vince/desktop/projet en cours/Cubes5_CESI # [Jls -a
+[1;34m.[m                        [1;32mDockerfile[m               [1;34mlogs[m                     [1;32mscript.sh[m
+[1;34m..[m                       [1;32mLICENSE[m                  [1;32mnginx-configuration.txt[m  [1;34msql[m
+[1;34m.git[m                     [1;32mREADME.md[m                [1;34mnode_modules[m             [1;34mstyle[m
+[1;32m.gitignore[m               [1;32mcomposer.json[m            [1;32mpackage-lock.json[m        [0;0mtypescript[m
+[1;34mApp[m                      [1;32mcomposer.lock[m            [1;32mpackage.json[m             [1;34mvendor[m
+[1;34mCore[m                     [1;32mdocker-compose.yml[m       [1;34mpublic[m
+/mnt/host/c/Users/vince/desktop/projet en cours/Cubes5_CESI # [6nchmod +x script.sh
+/mnt/host/c/Users/vince/desktop/projet en cours/Cubes5_CESI # [6n./script.sh
+ash: ./script.sh: not found
+/mnt/host/c/Users/vince/desktop/projet en cours/Cubes5_CESI # [6nsudo ./script.sh
+ash: sudo: not found
+/mnt/host/c/Users/vince/desktop/projet en cours/Cubes5_CESI # [6n/mnt/host/c/Users/vince/desktop/projet en cours/Cubes5_CESI # sudo ./script.sh[Jscript.sh[J[9D\script.sh[9Dscript.sh
+ash: sudo: not found
+/mnt/host/c/Users/vince/desktop/projet en cours/Cubes5_CESI # [6napt-get update
+ash: apt-get: not found
+/mnt/host/c/Users/vince/desktop/projet en cours/Cubes5_CESI # [6ns[Jls
+[1;34mApp[m                      [1;32mcomposer.json[m            [1;34mnode_modules[m             [1;34msql[m
+[1;34mCore[m                     [1;32mcomposer.lock[m            [1;32mpackage-lock.json[m        [1;34mstyle[m
+[1;32mDockerfile[m               [1;32mdocker-compose.yml[m       [1;32mpackage.json[m             [0;0mtypescript[m
+[1;32mLICENSE[m                  [1;34mlogs[m                     [1;34mpublic[m                   [1;34mvendor[m
+[1;32mREADME.md[m                [1;32mnginx-configuration.txt[m  [1;32mscript.sh[m

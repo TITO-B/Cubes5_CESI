@@ -1,28 +1,46 @@
 #!/bin/bash
-# Met à jour tous les paquets installés sur le système à leur dernière version disponible
+
+# Affiche un message avant de commencer la mise à jour du système
+echo "Début de la mise à jour du système..."
 sudo yum update -y
+echo "Mise à jour du système terminée."
 
-# Installe Docker, l'outil de conteneurisation
+# Affiche un message avant d'installer Docker
+echo "Début de l'installation de Docker..."
 sudo yum install docker -y
+echo "Installation de Docker terminée."
 
-# Ajoute l'utilisateur 'ec2-user' au groupe 'docker' pour permettre l'exécution des commandes Docker sans 'sudo'
+# Affiche un message avant d'ajouter l'utilisateur au groupe Docker
+echo "Ajout de l'utilisateur 'ec2-user' au groupe Docker..."
 sudo usermod -a -G docker ec2-user
+echo "Ajout de l'utilisateur au groupe Docker terminé."
 
-# Télécharge la version 3.7 de Docker Compose depuis GitHub, adaptée au système d'exploitation et à l'architecture de la machine
-wget https://github.com/docker/compose/releases/download/v3.7/docker-compose-$(uname -s)-$(uname -m)
+# Affiche un message avant de télécharger Docker Compose
+echo "Téléchargement de Docker Compose..."
+wget https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)
+echo "Téléchargement de Docker Compose terminé."
 
-# Déplace le fichier téléchargé de Docker Compose vers le répertoire /usr/local/bin et le renomme en 'docker-compose'
+# Affiche un message avant de déplacer Docker Compose vers /usr/local/bin
+echo "Installation de Docker Compose..."
 sudo mv docker-compose-$(uname -s)-$(uname -m) /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+echo "Installation de Docker Compose terminée."
 
-# Rend le fichier Docker Compose exécutable
-sudo chmod -v +x /usr/local/bin/docker-compose
-
-# Configure Docker pour démarrer automatiquement au démarrage du système
+# Affiche un message avant de démarrer Docker
+echo "Démarrage du service Docker..."
 sudo systemctl enable docker.service
-
-# Démarre le service Docker immédiatement
 sudo systemctl start docker.service
+echo "Démarrage du service Docker terminé."
 
+# Affiche un message avant de cloner le dépôt
+echo "Clonage du dépôt Cubes5_CESI (branche dev-VINC)..."
+git clone -b dev-VINC https://github.com/TITO-B/Cubes5_CESI.git
+echo "Clonage du dépôt terminé."
 
-# git clone
-# lance docker compose
+# Se déplace dans le répertoire cloné
+cd Cubes5_CESI
+
+# Affiche un message avant de construire et démarrer les services Docker Compose
+echo "Construction et démarrage des services Docker Compose..."
+docker-compose up -d --build
+echo "Construction et démarrage des services Docker Compose terminés."
