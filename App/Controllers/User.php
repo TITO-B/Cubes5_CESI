@@ -23,41 +23,22 @@ class User extends \Core\Controller
 
     /**
      * Affiche la page de login
+     * 
+     * Ajout de la gestion des code d'erreur, du cookie de session
      */
+    // 
     public function loginAction()
     {
-        if (isset($_GET["code"])) {
-            switch ($_GET["code"]) {
-                case "errem":
-                    $messageErreur = "Erreur : l'email utilisé n'est pas conforme";
-                    break;
-                case "errlog":
-                    $messageErreur = "Erreur : email ou mot de passe incorrect";
-                    break;
-                default:
-                    $messageErreur = "Erreur : Cette erreur n'est pas référencée !";
-                    break;
-            }
-        } else {
-            $messageErreur = "";
-        }
+        if(isset($_POST['submit'])){
+            $f = $_POST;
 
-        if ((isset($_COOKIE["visitorLogged"]) && $_COOKIE["visitorLogged"]) || (isset($_SESSION['user']['username']))) {
-            header('Location: /');
-        }
+            // TODO: Validation
 
-        if (isset($_POST['submit'])) {
-            try {
-                // Si login OK, redirige vers le compte
-                if ($this->login($_POST)) {
-                    header('Location: /account');
-                }
-            } catch (\Exception $e) {
-                echo "<script>console.log('Debug Objects: " . $e . "' );</script>";
-            }
-        }
+            $this->login($f);
 
-        $valueemail = (isset($_GET["email"])) ? $_GET["email"] : "";
+            // Si login OK, redirige vers le compte
+            header('Location: /account');
+        }
 
         View::renderTemplate('User/login.html', [
             'emailValue' => $valueemail,
@@ -67,93 +48,30 @@ class User extends \Core\Controller
 
     /**
      * Page de création de compte
+     * Ajout de la gestion des code d'erreur, de va vérificatino des identifiant avec code erreur,
+     * et du login direct apres l'inscription 
      */
     public function registerAction()
     {
-        if (isset($_GET["code"])) {
-            switch ($_GET["code"]) {
-                case "existe":
-                    $messageErreur = "Erreur : Cette adresse email est déjà utilisé";
-                    break;
-                case "errem":
-                    $messageErreur = "Erreur : l'email utilisé n'est pas conforme";
-                    break;
-                case "errlog":
-                    $messageErreur = "Erreur : email ou mot de passe incorrect";
-                    break;
-                case "mdpf":
-                    $messageErreur = "Erreur : Les deux mots de passes ne sont pas identiques";
-                    break;
-                case "mdpc":
-                    $messageErreur = "Erreur : Votre mot de passe est trop court";
-                    break;
-                case "idf":
-                    $messageErreur = "Erreur : Identifiant non valide";
-                    break;
-                default:
-                    $messageErreur = "Erreur : Cette erreur n'est pas référencée !";
-                    break;
+        if(isset($_POST['submit'])){
+            $f = $_POST;
+
+            if($f['password'] !== $f['password-check']){
+                // TODO: Gestion d'erreur côté utilisateur
             }
-        } else {
-            $messageErreur = "";
+
+            // validation
+
+            $this->register($f);
+            // TODO: Rappeler la fonction de login pour connecter l'utilisateur
         }
 
-        if (isset($_POST['submit'])) {
-            try {
-                $f = $_POST;
-                $email = $f['email'];
-                //regex de vérification des emails
-                $email = Regex::regexEmail($email);
-
-                if ($email == 'invalid email') {
-                    header('Location: /register?code=errem&username=' . $_POST["username"]);
-                    die();
-                }
-                if ($f['password'] != $f['password-check']) {
-                    header('Location: /register?code=mdpf&username=' . $_POST["username"] . '&email=' . $_POST["email"]);
-                    die();
-                } else {
-                    if (strlen($f['password']) < 7) {
-                        header('Location: /register?code=mdpc&username=' . $_POST["username"] . '&email=' . $_POST["email"]);
-                        die();
-                    } else {
-                        $f['username'] = Regex::regexAntiScript($f['username']);
-
-                        if ($f['username'] == "" || $f['username'] == " ") {
-                            header('Location: /register?code=idf&email=' . $_POST["email"]);
-                            die();
-                        } else {
-                            $verif = \App\Models\User::verifUser($f['email']);
-                            if ($verif['count'] == 0) {
-                                $this->register($f);
-                                $data = array(
-                                    "email" => $f['email'],
-                                    "password" => $f['password'],
-                                );
-                                $this->login($data);
-                                header('Location: /account');
-                            } else {
-                                header('Location: /register?code=existe&username=' . $_POST["username"]);
-                            }
-                        }
-                    }
-                }
-                // validation
-            } catch (\Exception $e) {
-                echo "<script>console.log('Debug Objects: " . $e . "' );</script>";
-            }
-        } else {
-            $valueUsername = (isset($_GET["username"])) ? $_GET["username"] : "";
-            $valueEmail = (isset($_GET["email"])) ? $_GET["email"] : "";
-            View::renderTemplate('User/register.html', [
-                "messageErreur" => $messageErreur,
-                "usernameValue" => $valueUsername,
-                "emailValue" => $valueEmail
-            ]);
-        }
+        View::renderTemplate('User/register.html');
     }
+
     /**
      * Affiche la page du compte
+     * Ajout d'information sur le profil utilisateur
      */
     public function accountAction()
     {
@@ -182,6 +100,7 @@ class User extends \Core\Controller
 
     /*
      * Fonction privée pour enregister un utilisateur
+     * Ajout information dan stableau data pour login et appel de login
      */
     private function register($data)
     {
@@ -207,20 +126,12 @@ class User extends \Core\Controller
         $this->login($data);
     }
 
-    private function login($data)
-    {
-        try {
-            if (isset($data['email']) && (isset($data['password'])
-                && strlen($data['password']) > 7
-            )) {
-                $email = $data['email'];
-                //regex de vérification des emails
-                $email = Regex::regexEmail($data['email']);
 
-                if ($email == 'invalid email') {
-                    header('Location: /login?code=errem');
-                    return false;
-                }
+    private function login($data){
+        try {
+            if(!isset($data['email'])){
+                throw new Exception('TODO');
+            }
 
                 $user = \App\Models\User::getByLogin($data['email']);
                 if (Hash::generate($data['password'], $user['salt']) == $user['password']) {
@@ -252,28 +163,37 @@ class User extends \Core\Controller
         }
     }
     /**
+     * 
      * Logout: Delete cookie and session. Returns true if everything is okay,
      * otherwise turns false.
      * @access public
      * @return boolean
      * @since 1.0.2
      */
-    public function logoutAction()
-    {
-        try {
-            if (isset($_COOKIE)) {
-                Cookie::delCookies();
-            }
-            // Destroy all data registered to the session.
-            $_SESSION = array();
-            if (ini_get("session.use_cookies")) {
-                Cookie::delCookies2();
-            }
-            session_destroy();
-            header("Location: /");
-            return true;
-        } catch (\Exception $e) {
-            echo "<script>console.log('Debug Objects: " . $e . "' );</script>";
+    public function logoutAction() {
+
+        /*
+        if (isset($_COOKIE[$cookie])){
+            // TODO: Delete the users remember me cookie if one has been stored.
+            // https://github.com/andrewdyer/php-mvc-register-login/blob/development/www/app/Model/UserLogin.php#L148
+        }*/
+        // Destroy all data registered to the session.
+
+        $_SESSION = array();
+
+        if (ini_get("session.use_cookies")) {
+            $params = session_get_cookie_params();
+            setcookie(session_name(), '', time() - 42000,
+                $params["path"], $params["domain"],
+                $params["secure"], $params["httponly"]
+            );
         }
+
+        session_destroy();
+
+        header ("Location: /");
+
+        return true;
     }
+
 }

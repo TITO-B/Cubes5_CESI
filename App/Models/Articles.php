@@ -190,30 +190,9 @@ class Articles extends Model
         try {
             $stmt->execute();
 
-            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        } catch (\Exception $e) {
-
-            echo "<script>console.log('Debug Objects: " . $e . "' );</script>";
-        }
+        return $stmt->fetchAll(\PDO::FETCH_ASSOC);
     }
 
-    // //NEW
-    // public static function autocomplete($data)
-    // {
-    //     $db = static::getDB();
-    //     $sql = "SELECT ville_nom_reel FROM villes_france WHERE ville_nom_reel like  :city limit 3;";
-    //     $stmt = $db->prepare($sql);
-    //     $city = $data . "%";
-
-    //     $stmt->bindParam("city", $city);
-
-    //     try {
-    //         $stmt->execute();
-    //         return $stmt->fetchAll(\PDO::FETCH_ASSOC);
-    //     } catch (\Exception $e) {
-    //         echo $e;
-    //     }
-    // }
 
 
     /**
@@ -222,30 +201,23 @@ class Articles extends Model
      * @return string|boolean
      * @throws Exception
      */
-    public static function save($data)
-    {
-        if (
-            isset($data['name']) && isset($data['description']) && isset($data['user_id']) 
-            && $data['name'] != "" && $data['description'] != "" && $data['user_id'] != ""
-        ) {
-            $db = static::getDB();
-            $stmt = $db->prepare('INSERT INTO articles(name, description,published_date, user_id, views, picture) VALUES (:name, :description, :published_date, :user_id, :views , :picture)');
-            
-            $stmt->bindParam(':name', $data['name']);
-            $stmt->bindParam(':description', $data['description']);
-            $stmt->bindParam(':published_date', $data['published_date']);
-            $stmt->bindParam(':user_id', $data['user_id']);
-            $stmt->bindParam(':views', $data['views']);
-            $stmt->bindParam(':picture', $data['pictureName']);
-            try {
-                $stmt->execute();
-                return $db->lastInsertId();
-            } catch (\Exception $e) {
-                echo "<script>console.log('Debug Objects: " . $e . "' );</script>";
-            }
-        } else {
-        }
+    public static function save($data) {
+        $db = static::getDB();
+
+        $stmt = $db->prepare('INSERT INTO articles(name, description, user_id, published_date) VALUES (:name, :description, :user_id,:published_date)');
+
+        $published_date =  new DateTime();
+        $published_date = $published_date->format('Y-m-d');
+        $stmt->bindParam(':name', $data['name']);
+        $stmt->bindParam(':description', $data['description']);
+        $stmt->bindParam(':published_date', $published_date);
+        $stmt->bindParam(':user_id', $data['user_id']);
+
+        $stmt->execute();
+
+        return $db->lastInsertId();
     }
+
 
     public static function attachPicture($articleId, $pictureName)
     {
@@ -256,48 +228,11 @@ class Articles extends Model
         $stmt->bindParam(':picture', $pictureName);
         $stmt->bindParam(':articleid', $articleId);
 
-        try {
-            $stmt->execute();
-        } catch (\Exception $e) {
-            echo "<script>console.log('Debug Objects: " . $e . "' );</script>";
-        }
+
+        $stmt->execute();
     }
 
-    //NEW
-    public static function searchByWording($object)
-    {
-        $db = static::getDB();
-        $sql = "SELECT *,CONCAT(LEFT(description,20),'...') as description FROM articles WHERE name LIKE :name OR description LIKE :description";
-        try {
-            $request = $db->prepare($sql);
-            $request->execute([
-                'name' => '%' . $object . '%',
-                'description' => '%' . $object . '%'
-            ]);
-            return $request->fetchAll();
-        } catch (\Exception $e) {
-            echo "<script>console.log('Debug Objects: " . $e . "' );</script>";
-        }
-    }
 
-    //NEW
-    public static function searchAroundMe($cities)
-    {
-        $db = static::getDB();
-        $arrayArticles = [];
-        foreach ($cities as $city) {
-            $cityName = $city[0];
-            $sql = "SELECT *,CONCAT(LEFT(description,20),'...') as description FROM articles WHERE articles.city =:city";
-            $request = $db->prepare($sql);
-            $request->execute(['city' => $cityName]);
-            $result = $request->fetchAll();
-            if (count($result) > 0) {
-                foreach ($result as $item) {
-                    $arrayArticles[] = $item;
-                }
-            }
-        }
 
-        return $arrayArticles;
-    }
+
 }

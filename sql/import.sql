@@ -43,11 +43,11 @@ INSERT INTO `articles` (`id`, `name`, `description`, `published_date`, `user_id`
 (6, 'Jeu de boules', 'Mini boules de pétanque. Boîte contenant 6 boules de pétanque un cochonnet et une ficelle pour mesurer.\nEn bon état.', '2018-05-28', 1, 8, '6.jpeg'),
 (7, 'Livre', 'La déclaration de Gemma Malley. Lu une fois. Très bon état', '2018-05-28', 3, 9, '7.jpeg'),
 (8, 'Puzzle Harry Potter', 'Donne puzzle 1000 pièces Fantastic Beast - Neuf, dans son emballage d’origine', '2018-05-28', 1, 14, '8.jpeg'),
-(9, 'Cadre New York', 'Donne cadre en toile plastifiée, Taxis New York 100 × 50. J\'en veux plus ', '2018-05-28', 1, 9, '9.jpeg'),
+(9, 'Cadre New York', 'Donne cadre en toile plastifiée, Taxis New York 100 × 50. J’en veux plus ', '2018-05-28', 1, 9, '9.jpeg'),
 (10, 'Calculatrice', 'Calculatrice Casio, je donne car erreur de modèle.', '2018-05-28', 1, 11, '10.jpeg'),
 (11, 'Djembé', 'Djembé en bois peu servi.\n', '2018-05-28', 3, 15, '11.jpeg'),
 (12, 'Pull de noel', 'pull de noel Coca Cola thème du ski, taille xs chez les hommes donc je dirais un s chez les femmes. Jamais porté car trop petit !', '2018-05-28', 1, 13, '12.jpeg'),
-(13, 'Taie d\'oreiller', 'Je donne cette belle taie d’oreiller, de chez h&m. Très bon état. Dimensions : 47x47cm', '2018-05-28', 1, 13, '13.jpeg'),
+(13, 'Taie d’oreiller', 'Je donne cette belle taie d’oreiller, de chez h&m. Très bon état. Dimensions : 47x47cm', '2018-05-28', 1, 13, '13.jpeg'),
 (14, 'Beau Livre', 'The Grand Tour des éditions taschen. Dans sa boîte cartonnée ! Attention grand format : 41×30×7 - 8 kilos.', '2018-05-28', 1, 17, '14.jpeg'),
 (15, 'Mules Minelli', 'jamais portées. elles me sont trop petites. elles sont étroites', '2018-05-28', 1, 15, '15.jpeg'),
 (16, 'Bougie', 'Bougie Bath&Body Works. 3 Mèches Pure White Cotton. Sent la lessive', '2018-05-28', 1, 16, '16.jpeg'),
@@ -59,13 +59,13 @@ INSERT INTO `articles` (`id`, `name`, `description`, `published_date`, `user_id`
 (22, 'Montre femme', 'Montre pour femme avec un bracelet doré réglable selon votre poignet. Elle possède un très jolie cadrant en marbre noir et blanc. Cette dernière est toute fois assez grosse. Jamais portée.', '2018-05-28', 1, 22, '22.jpeg'),
 (23, 'Produit beauté', 'Eau micellaire démaquillante Yves Rocher. Neuf jamais ouvert', '2018-05-28', 1, 24, '23.jpeg'),
 (24, 'Sac noir', 'Petite sacoche noire simple neuve. Jamais portée', '2018-05-28', 1, 24, '24.jpeg'),
-(25, 'Boite airpods', 'J\'ai cassé un ecouteur il me reste juste la boite alors je la donne', '2018-05-28', 1, 26, '25.jpeg'),
+(25, 'Boite airpods', 'J’ai cassé un ecouteur il me reste juste la boite alors je la donne', '2018-05-28', 1, 26, '25.jpeg'),
 (26, 'VHS Destination Finale', 'Cassette vidéo horreur bon état VHS. Marche toujours', '2018-05-28', 1, 27, '26.jpeg'),
 (27, 'Porte-clés', 'Porte-clés fétiche arumbaya vu dans une BD Tintin', '2018-05-28', 1, 27, '27.jpeg'),
-(28, 'Manteau Desigual', 'Neuf. Taille 42 mais taille un peu petit. Correspond à un S. Parfait pour une prof d\'espagnol', '2018-05-28', 1, 28, '28.jpeg'),
-(29, 'Cintres', 'Cintres en aluminium, parfaits pour les pantalons et les jupes. J\'en ai plus de 80 si vous en voulez plus.', '2018-05-28', 1, 30, '29.jpeg'),
+(28, 'Manteau Desigual', 'Neuf. Taille 42 mais taille un peu petit. Correspond à un S. Parfait pour une prof d’espagnol', '2018-05-28', 1, 28, '28.jpeg'),
+(29, 'Cintres', 'Cintres en aluminium, parfaits pour les pantalons et les jupes. J’en ai plus de 80 si vous en voulez plus.', '2018-05-28', 1, 30, '29.jpeg'),
 (30, 'Chaise de bureau', 'chaise de bureau rose. pour enfant', '2018-05-28', 1, 30, '30.jpeg'),
-(31, 'Tapis enfant', 'Tapis d\'épaisseur moquette. Cadre cousu. Dessous caoutchou. Longueur : 1,20m. Largeur : 80cm', '2018-05-28', 1, 33, '31.jpeg');
+(31, 'Tapis enfant', 'Tapis d’épaisseur moquette. Cadre cousu. Dessous caoutchou. Longueur : 1,20m. Largeur : 80cm', '2018-05-28', 1, 33, '31.jpeg');
 
 -- --------------------------------------------------------
 
@@ -88,7 +88,7 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `username`, `email`, `password`, `salt`, `is_admin`) VALUES
 (1, 'John Doe', 'john.doe@gmail.com', '', '', 0),
-(3, 'Azerty', 'admin@admin.fr', 'e27f4a0e6addcaacbfc1322fbc8543fb3f696b228af9e08ac9595cdd70ce0134', ':d>BK\\ta]3-0=jM<g1=:=!\'<ykeP_@M;', 0);
+(3, 'Azerty', 'admin@admin.fr', 'e27f4a0e6addcaacbfc1322fbc8543fb3f696b228af9e08ac9595cdd70ce0134', ":d>BK\\ta]3-0=jM<g1=:=!\'<ykeP_@M;", 0);
 
 -- --------------------------------------------------------
 
