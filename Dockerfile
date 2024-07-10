@@ -1,5 +1,5 @@
 # Utilisez l'image PHP officielle avec Apache
-FROM php:7.4-apache
+FROM php:8.2-apache
 
 # Installez les dépendances nécessaires pour Composer et PDO
 RUN apt-get update && apt-get install -y \
